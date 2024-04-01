@@ -10,18 +10,20 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
   backend:
-    build: ./health_assistant
+    build: ./backend
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./health_assistant:/code
+      - ./backend:/code
     ports:
       - "8000:8000"
+    environment:
+      - DEBUG=1
     depends_on:
       - db
   frontend:
-    build: ./health-assistant-frontend
+    build: ./frontend
     volumes:
-      - ./health-assistant-frontend:/app
+      - ./frontend:/app
       - /app/node_modules
     ports:
       - "3000:3000"
