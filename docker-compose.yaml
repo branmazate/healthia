@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: dbname
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  backend:
+    build: ./health_assistant
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./health_assistant:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  frontend:
+    build: ./health-assistant-frontend
+    volumes:
+      - ./health-assistant-frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+volumes:
+  postgres_data:
