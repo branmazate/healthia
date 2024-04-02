@@ -1,9 +1,22 @@
-from rest_framework import status
+#Rest_framework packages.
+from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserSerializer
+from rest_framework.permissions import IsAuthenticated
+#App constructed packages
+from .serializers import UserSerializer, UserQuerySerializer, ChatResponseSerializer
+from .models import UserQuery, ChatResponse
+
+class UserQueryViewSet(viewsets.ModelViewSet):
+    queryset = UserQuery.objects.all()
+    serializer_class = UserQuerySerializer
+    permission_classes = [IsAuthenticated]
+    
+class ChatResponseViewSet(viewsets.ModelViewSet):
+    queryset = ChatResponse.objects.all()
+    serializer_class = ChatResponseSerializer
 
 #User registration view
 class UserCreate(APIView):
