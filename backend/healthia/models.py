@@ -1,7 +1,16 @@
+import openai
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 
-
+class DetectedSymptom(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='detected_symptoms')
+    symptom_text = models.CharField(max_length=250)
+    standardized_symptom = models.CharField(max_length=250)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.symptom_text
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     additional_info = models.TextField(blank=True)
