@@ -8,7 +8,7 @@ def extract_symptoms(user_input):
 
     prompt = f"Identify and list potential medical symptoms for the following user input {user_input}."
 
-    # Generación de la respuesta
+    # response
     response = openai.Completion.create(
         engine="davinci",
         prompt=prompt,
