@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import UserSerializer, UserQuerySerializer, ChatResponseSerializer
 from .models import UserQuery, ChatResponse
 from .chatbot import generate_chatbot_response
+from .services.symptom_service import process_user_query_and_extract_symptoms
 
 class UserQueryViewSet(viewsets.ModelViewSet):
     queryset = UserQuery.objects.all().prefetch_related('chatresponse_set')
@@ -18,6 +19,9 @@ class UserQueryViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         user_query = serializer.save()
+        #Process the query for symptom extraction and handling
+        process_user_query_and_extract_symptoms(user_query)
+        #Generate and store the chatbot response
         chatbot_response_text = generate_chatbot_response(user_query.query_text)
         if chatbot_response_text:
             ChatResponse.objects.create(query=user_query, response_text=chatbot_response_text)
