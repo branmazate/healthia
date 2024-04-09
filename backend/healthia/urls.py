@@ -4,7 +4,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from .views import UserCreate, Logout, UserQueryViewSet, ChatResponseViewSet
 
 router = DefaultRouter()
-router.register(r"userquery", UserQueryViewSet)
+router.register(r"userqueries", UserQueryViewSet)
 router.register(r"chatresponse", ChatResponseViewSet)
 
 urlpatterns = [

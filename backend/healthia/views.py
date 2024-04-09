@@ -5,14 +5,22 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+
 #App constructed packages
 from .serializers import UserSerializer, UserQuerySerializer, ChatResponseSerializer
 from .models import UserQuery, ChatResponse
+from .chatbot import generate_chatbot_response
 
 class UserQueryViewSet(viewsets.ModelViewSet):
-    queryset = UserQuery.objects.all()
+    queryset = UserQuery.objects.all().prefetch_related('chatresponse_set')
     serializer_class = UserQuerySerializer
     permission_classes = [IsAuthenticated]
+    
+    def perform_create(self, serializer):
+        user_query = serializer.save()
+        chatbot_response_text = generate_chatbot_response(user_query.query_text)
+        if chatbot_response_text:
+            ChatResponse.objects.create(query=user_query, response_text=chatbot_response_text)
     
 class ChatResponseViewSet(viewsets.ModelViewSet):
     queryset = ChatResponse.objects.all()
