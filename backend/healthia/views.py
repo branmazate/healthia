@@ -1,3 +1,4 @@
+from .chatbot import generate_chatbot_response
 #Rest_framework packages.
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -13,12 +14,26 @@ from .chatbot import generate_chatbot_response
 from .services.symptom_service import process_user_query_and_extract_symptoms
 
 class UserQueryViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for viewing and editing user queries.
+    It handles the CRUD operations automatically and includes
+    custom logic for processing user queries upon creation.
+    """
     queryset = UserQuery.objects.all().prefetch_related('chatresponse_set')
     serializer_class = UserQuerySerializer
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     
     def perform_create(self, serializer):
-        user_query = serializer.save()
+        """
+        Processes the creation of UserQuery instances.
+        It saves the new query, processes it for symptom extraction,
+        and generates a chatbot response.
+        """
+        serializer.save(user=self.request.user)
+        #Save the new userQuery instance
+        user_query = serializer.instance
+        
         #Process the query for symptom extraction and handling
         process_user_query_and_extract_symptoms(user_query)
         #Generate and store the chatbot response
